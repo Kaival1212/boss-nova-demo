@@ -56,9 +56,9 @@ class TimingController extends Controller
         // Bookings → regular events
         foreach ($bookings as $booking) {
             $events[] = [
-                'title' => $booking->invitee_name,
-                'start' => $booking->starts_at,
-                'end' => $booking->ends_at,
+                'title' => $booking->client->name,
+                'start' => $booking->date,
+                'end' => date('Y-m-d H:i:s', strtotime($booking->date) + 1200),
                 'color' => '#00C951', // blue
             ];
         }
