@@ -37,6 +37,24 @@
                     >
                         {{ __("Timings") }}
                     </flux:sidebar.item>
+
+                    <flux:sidebar.item
+                        icon="users"
+                        :href="route('clients.index')"
+                        :current="request()->routeIs('clients.index')"
+                        wire:navigate
+                    >
+                        {{ __("Clients") }}
+                    </flux:sidebar.item>
+
+                        <!-- <flux:sidebar.item
+                            icon="calendar"
+                            :href="route('bookings.index')"
+                            :current="request()->routeIs('bookings.index')"
+                            wire:navigate
+                        >
+                            {{ __("Bookings") }}
+                        </flux:sidebar.item> -->
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 

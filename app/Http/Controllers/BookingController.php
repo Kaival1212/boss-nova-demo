@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 
-class ClientController extends Controller
+class BookingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $clients = Client::all();
+        $bookings = Booking::all();
 
-        return view('pages.clients.⚡index', compact('clients'));
+        dd($bookings);
+
+        return view('pages.bookings.⚡index', compact('bookings'));
     }
 
     /**
@@ -36,17 +38,15 @@ class ClientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Client $client)
+    public function show(Booking $booking)
     {
-        $bookings = $client->bookings()->orderBy('date', 'desc')->get();
-
-        return view('pages.clients.⚡show', ['client' => $client, 'bookings' => $bookings]);
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(client $client)
+    public function edit(Booking $booking)
     {
         //
     }
@@ -54,7 +54,7 @@ class ClientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, client $client)
+    public function update(Request $request, Booking $booking)
     {
         //
     }
@@ -62,7 +62,7 @@ class ClientController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(client $client)
+    public function destroy(Booking $booking)
     {
         //
     }

@@ -39,7 +39,7 @@ class TimingController extends Controller
                 'startTime' => $rule->opens_at,
                 'endTime' => $rule->closes_at,
                 'display' => 'background',
-                'color' => '#D1FAE5', // green
+                'color' => '#2B7FFF', // green
             ];
         }
 
@@ -49,7 +49,7 @@ class TimingController extends Controller
                 'title' => $block->reason ?? 'Blocked',
                 'start' => $block->starts_at,
                 'end' => $block->ends_at,
-                'color' => '#FEE2E2', // red
+                'color' => '#FB2B37', // red
             ];
         }
 
@@ -57,9 +57,9 @@ class TimingController extends Controller
         foreach ($bookings as $booking) {
             $events[] = [
                 'title' => $booking->invitee_name,
-                'start' => $booking->starts_at->toDateTimeString(),
-                'end' => $booking->ends_at->toDateTimeString(),
-                'color' => '#BFDBFE', // blue
+                'start' => $booking->starts_at,
+                'end' => $booking->ends_at,
+                'color' => '#00C951', // blue
             ];
         }
 

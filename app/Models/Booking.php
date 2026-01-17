@@ -10,6 +10,7 @@ class Booking extends Model
         'client_id',
         'date',
         'status',
+        'notes',
     ];
 
     public function client()
