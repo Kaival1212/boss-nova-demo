@@ -10,7 +10,7 @@ use Illuminate\Foundation\Queue\Queueable;
 #[ObservedBy(BookingObserver::class)]
 class Booking extends Model implements \Illuminate\Contracts\Queue\ShouldQueue
 {
-    use Queueable;
+    // use Queueable;
 
     protected $fillable = [
         'client_id',
