@@ -42,15 +42,21 @@ class AppointmentBooked extends Notification implements \Illuminate\Contracts\Qu
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('New Appointment Booked')
+            ->subject('Appointment Confirmed - '.date('Y-m-d', strtotime($this->booking->date)))
             ->greeting('Hello '.$notifiable->name.',')
-            ->line('Your new appointment has been successfully booked!')
-            ->line('Appointment Details:')
-            ->line('Date: '.$this->booking->date)
-            ->line('if you have any questions, feel free to contact us.')
-            ->line('Thank you for using our application!')
-            ->salutation('Best regards, Bossa Nova Health');
-
+            ->line('Great news! Your appointment has been successfully confirmed.')
+            ->line('**Appointment Details:**')
+            ->line('📅 **Date:** '.date('Y-m-d', strtotime($this->booking->date)))
+            ->line('🕐 **Time:** '.date('g:i A', strtotime($this->booking->date)))
+            ->line('**What to bring:**')
+            ->line('• Valid ID and insurance card')
+            ->line('• List of current medications')
+            ->line('• Any relevant medical records')
+            ->action('View Appointment Details', url('/appointments/'.$this->booking->id))
+            ->line('Need to reschedule? You can manage your appointment anytime through your account.')
+            ->line('If you have any questions or concerns, please don\'t hesitate to reach out to us at '.config('mail.from.address').' or call us at (555) 123-4567.')
+            ->salutation('Best regards,
+The Bossa Nova Health Team');
     }
 
     /**
