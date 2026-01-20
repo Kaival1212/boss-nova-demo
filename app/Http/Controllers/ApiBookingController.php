@@ -43,7 +43,7 @@ class ApiBookingController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:clients,email',
+            'email' => 'required|email',
             'notes' => 'nullable|string',
             'date' => 'required|date|after_or_equal:today',
             'time' => 'required|string',
