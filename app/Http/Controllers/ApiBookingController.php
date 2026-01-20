@@ -52,15 +52,15 @@ class ApiBookingController extends Controller
         // 2 digits secret code generation
         $secret_code = rand(10, 99);
 
-        $client = Client::create([
+        $client = Client::findOrNew([
             'name' => $request->name,
             'email' => $request->email,
-            'notes' => $request->notes,
             'secret_code' => $secret_code,
         ]);
 
         Booking::create([
             'client_id' => $client->id,
+            'notes' => $request->notes,
             'date' => $request->date.' '.$request->time,
         ]);
 

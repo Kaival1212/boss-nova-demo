@@ -6,7 +6,8 @@
 
         <title>Laravel</title>
 
-        <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+        <!-- <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script> -->
+         <!-- import app.js -->
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
