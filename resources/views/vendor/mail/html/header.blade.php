@@ -5,7 +5,7 @@
 @if (trim($slot) === 'Laravel')
 <img src="{{ asset('storage/Bossa-Nova-Health-5.svg') }}" class="logo" alt="Bossa Nova Health Logo">
 @else
-{!! $slot
+{!! $slot !!}
 @endif
 </a>
 </td>
