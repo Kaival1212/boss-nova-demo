@@ -14,6 +14,7 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
+        "laraveljutsu/zap": "^1.10",
         "livewire/flux": "^2.10",
         "livewire/livewire": "^4.0",
         "resend/resend-laravel": "^1.1",

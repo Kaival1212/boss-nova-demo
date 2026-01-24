@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
+            $table->foreignId('doctor_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('date'); // UTC
             $table->text('notes')->nullable();
             $table->string('status')->default('confirmed');

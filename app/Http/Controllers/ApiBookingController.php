@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BlockedPeriod;
+use App\Http\Resources\UserResource;
 use App\Models\Booking;
 use App\Models\Client;
-use App\Models\OpeningRule;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Zap;
 
 class ApiBookingController extends Controller
 {
@@ -47,6 +49,8 @@ class ApiBookingController extends Controller
             'notes' => 'nullable|string',
             'date' => 'required|date|after_or_equal:today',
             'time' => 'required|string',
+            'doctor_id' => 'required|integer|exists:users,id',
+            'end_time' => 'required|string',
         ]);
 
         // 2 digits secret code generation
@@ -63,49 +67,61 @@ class ApiBookingController extends Controller
             $client->save();
         }
 
+        $doctor = User::find($request->doctor_id);
+
+        $zap = Zap::for($doctor)->named('Appointment by - '.$client->name)->appointment()->from($request->date)->addPeriod($request->time, $request->end_time)->withMetaData([
+            'client_name' => $client->name,
+            'client_email' => $client->email,
+            'notes' => $request->notes,
+        ])->save();
+
         Booking::create([
             'client_id' => $client->id,
             'notes' => $request->notes,
             'date' => $request->date.' '.$request->time,
+            'doctor_id' => $request->doctor_id,
         ]);
 
-        return response()->json(['secret_code' => $secret_code], 201);
+        Log::info('Creating booking for client: '.$client->name.' with doctor: '.$doctor->name.' on '.$request->date.' at '.$request->time);
+
+        return response()->json(['secret_code' => $secret_code, 'booking' => $zap], 201);
 
     }
 
-    public function getLatestAvailableBookingTimes()
+    public function getLatestAvailableBookingTimes(Request $request)
     {
-        $openingRules = OpeningRule::all()->map(function ($rule) {
-            return [
-                'day_of_week' => $rule->day_of_week, // MON, TUE, etc.
-                'opens_at' => $rule->opens_at,    // 09:00
-                'closes_at' => $rule->closes_at,   // 17:00
-                'slot_duration' => $rule->slot_duration_minutes,
-                'buffer_before' => $rule->buffer_before ?? 0,
-                'buffer_after' => $rule->buffer_after ?? 0,
-            ];
-        });
-
-        $blockedPeriods = BlockedPeriod::all()->map(function ($block) {
-            return [
-                'starts_at' => $block->starts_at, // ISO string
-                'ends_at' => $block->ends_at,   // ISO string
-                'reason' => $block->reason ?? 'Blocked',
-            ];
-        });
-
-        return response()->json([
-            'opening_rules' => $openingRules,
-            'blocked_periods' => $blockedPeriods,
+        $request->validate([
+            'id' => 'required|integer|exists:users,id',
         ]);
+
+        $id = $request->id;
+        $user = User::find($id);
+
+        $data = $user->availabilitySchedules()->get();
+        $data = $data->map(function ($schedule) {
+            return [
+                'name' => $schedule->name,
+                'description' => $schedule->description,
+                'is_recurring' => $schedule->is_recurring,
+                'frequency' => $schedule->frequency,
+                'frequency_config' => $schedule->frequency_config,
+                'start_time' => $schedule->periods->first()->start_time,
+                'end_time' => $schedule->periods->first()->end_time,
+            ];
+        });
+
+        return response()->json(['data' => $data], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function getdoctors()
     {
-        //
+        $doctors = User::where('type', 'staff')->get();
+        $data = UserResource::collection($doctors);
+
+        return response()->json(['doctors' => $data], 200);
     }
 
     /**

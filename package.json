@@ -22,6 +22,6 @@
         "lightningcss-linux-x64-gnu": "^1.29.1"
     },
     "devDependencies": {
-        "daisyui": "^5.5.14"
+        "prettier-plugin-blade": "^2.1.21"
     }
 }
