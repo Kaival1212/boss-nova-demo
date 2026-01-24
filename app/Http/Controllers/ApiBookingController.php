@@ -6,6 +6,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Booking;
 use App\Models\Client;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Zap;
 
@@ -83,11 +84,58 @@ class ApiBookingController extends Controller
                 'doctor_id' => $request->doctor_id,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to create booking: '.$e->getMessage()], 500);
+            return response()->json(['message' => 'Failed to create booking: '.$e->getMessage()], 200);
         }
 
         return response()->json(['secret_code' => $secret_code, 'booking' => $zap], 201);
 
+    }
+
+    public function isAvailableDate(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:users,id',
+            'date' => 'required|date',
+        ]);
+
+        $id = $request->id;
+        // covert to string to iso format yyyy-mm-dd
+        $date = Carbon::parse($request->date)->toDateString();
+
+        $user = User::find($id);
+        $blocked = $user->blockedSchedules()
+            ->whereDate('start_date', '=', $date)
+            ->get();
+        $appointments = $user->appointmentSchedules()
+            ->whereDate('start_date', '=', $date)
+            ->get();
+
+        $data = $blocked->map(function ($schedule) {
+            return [
+                'name' => $schedule->name,
+                'start_date' => $schedule->start_date,
+                'start_time' => $schedule->periods->first()->start_time,
+                'end_time' => $schedule->periods->first()->end_time,
+                'schedule_type' => $schedule->schedule_type,
+            ];
+        });
+
+        $data = $data->merge($appointments->map(function ($schedule) {
+            return [
+                'name' => $schedule->name,
+                'start_date' => $schedule->start_date,
+                'start_time' => $schedule->periods->first()->start_time,
+                'end_time' => $schedule->periods->first()->end_time,
+                'schedule_type' => $schedule->schedule_type,
+            ];
+        }));
+
+        return response()->json(['is_available' => $data], 200);
+    }
+
+    public function isAvailableTime(Request $request)
+    {
+        //
     }
 
     public function getLatestAvailableBookingTimes(Request $request)
