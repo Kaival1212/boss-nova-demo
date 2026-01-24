@@ -7,7 +7,6 @@ use App\Models\Booking;
 use App\Models\Client;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Zap;
 
 class ApiBookingController extends Controller
@@ -81,8 +80,6 @@ class ApiBookingController extends Controller
             'date' => $request->date.' '.$request->time,
             'doctor_id' => $request->doctor_id,
         ]);
-
-        Log::info('Creating booking for client: '.$client->name.' with doctor: '.$doctor->name.' on '.$request->date.' at '.$request->time);
 
         return response()->json(['secret_code' => $secret_code, 'booking' => $zap], 201);
 

@@ -98,7 +98,7 @@ new class extends Component {
 
             $events[] = [
                 'id' => $item->id,
-                'title' => $item->name,
+                'title' => $item->name . ' notes -' . $item->metadata['notes'],
                 'start' => $start->toIso8601String(),
                 'end' => $end->toIso8601String(),
                 'color' => '#3b82f6', // Blue-500
@@ -387,7 +387,7 @@ new class extends Component {
                     day: 'Day',
                 },
                 allDaySlot: false,
-                slotDuration: "00:30:00",
+                slotDuration: "00:20:00",
                 businessHours: @json($businessHours ?? []),
                 expandRows: true,
                 stickyHeaderDates: true,
