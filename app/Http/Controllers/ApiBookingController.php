@@ -68,18 +68,23 @@ class ApiBookingController extends Controller
 
         $doctor = User::find($request->doctor_id);
 
-        $zap = Zap::for($doctor)->named('Appointment by - '.$client->name)->appointment()->from($request->date)->addPeriod($request->time, $request->end_time)->withMetaData([
-            'client_name' => $client->name,
-            'client_email' => $client->email,
-            'notes' => $request->notes,
-        ])->save();
+        try {
 
-        Booking::create([
-            'client_id' => $client->id,
-            'notes' => $request->notes,
-            'date' => $request->date.' '.$request->time,
-            'doctor_id' => $request->doctor_id,
-        ]);
+            $zap = Zap::for($doctor)->named('Appointment by - '.$client->name)->appointment()->from($request->date)->addPeriod($request->time, $request->end_time)->withMetaData([
+                'client_name' => $client->name,
+                'client_email' => $client->email,
+                'notes' => $request->notes,
+            ])->save();
+
+            Booking::create([
+                'client_id' => $client->id,
+                'notes' => $request->notes,
+                'date' => $request->date.' '.$request->time,
+                'doctor_id' => $request->doctor_id,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to create booking: '.$e->getMessage()], 500);
+        }
 
         return response()->json(['secret_code' => $secret_code, 'booking' => $zap], 201);
 
