@@ -7,6 +7,7 @@ use App\Models\Client;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\HtmlString;
 
 class AppointmentBooked extends Notification implements \Illuminate\Contracts\Queue\ShouldQueue
 {
@@ -55,8 +56,7 @@ class AppointmentBooked extends Notification implements \Illuminate\Contracts\Qu
             ->action('View Appointment Details', url('/appointments/'.$this->booking->id))
             ->line('Need to reschedule? You can manage your appointment anytime through your account.')
             ->line('If you have any questions or concerns, please don\'t hesitate to reach out to us at '.config('mail.from.address').' or call us at (555) 123-4567.')
-            ->salutation('Best regards,
-The Bossa Nova Health Team');
+            ->salutation(new HtmlString('Regards, <br>'.config('app.name').' Team'));
     }
 
     /**

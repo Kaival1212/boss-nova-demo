@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Client extends Model
 {
-    use Notifiable;
+    use LogsActivity,Notifiable;
 
     protected $fillable = [
         'name',
@@ -25,5 +26,14 @@ class Client extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function getActivitylogOptions(): \Spatie\Activitylog\LogOptions
+    {
+        return \Spatie\Activitylog\LogOptions::defaults()
+            ->useLogName('client')
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

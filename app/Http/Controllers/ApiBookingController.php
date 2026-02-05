@@ -120,15 +120,17 @@ class ApiBookingController extends Controller
             ];
         });
 
-        $data = $data->merge($appointments->map(function ($schedule) {
-            return [
-                'name' => $schedule->name,
-                'start_date' => $schedule->start_date,
-                'start_time' => $schedule->periods->first()->start_time,
-                'end_time' => $schedule->periods->first()->end_time,
-                'schedule_type' => $schedule->schedule_type,
-            ];
-        }));
+        $data = $blocked
+            ->concat($appointments) // 🔥 concat, not merge
+            ->map(function ($schedule) {
+                return [
+                    'name' => $schedule->name,
+                    'start_date' => $schedule->start_date,
+                    'start_time' => optional($schedule->periods->first())->start_time,
+                    'end_time' => optional($schedule->periods->first())->end_time,
+                    'schedule_type' => $schedule->schedule_type,
+                ];
+            });
 
         return response()->json(['is_available' => $data], 200);
     }

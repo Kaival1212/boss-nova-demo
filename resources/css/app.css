@@ -44,18 +44,7 @@
     --color-primary-800: #166534;
     --color-primary-900: #14532d;
     --color-primary-950: #052e16;
-    /* TallStackUI Dark Color - Map to zinc */
-    --color-dark-50: var(--color-slate-50);
-    --color-dark-100: var(--color-slate-100);
-    --color-dark-200: var(--color-slate-200);
-    --color-dark-300: var(--color-slate-300);
-    --color-dark-400: var(--color-slate-400);
-    --color-dark-500: var(--color-slate-500);
-    --color-dark-600: var(--color-slate-600);
-    --color-dark-700: var(--color-slate-700);
-    --color-dark-800: var(--color-slate-800);
-    --color-dark-900: var(--color-slate-900);
-    --color-dark-950: var(--color-slate-950);
+
 
 }
 

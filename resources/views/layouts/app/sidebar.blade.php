@@ -7,40 +7,36 @@
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <x-ts-toast />
-    <flux:sidebar sticky collapsible="mobile"
-        class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+    <flux:sidebar sticky collapsible class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
         <flux:sidebar.header>
             <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
-            <flux:sidebar.collapse class="lg:hidden" />
+            <flux:sidebar.collapse />
+
+
         </flux:sidebar.header>
 
         <flux:sidebar.nav>
-            <flux:sidebar.group :heading="__('Platform')" class="grid">
+            <flux:sidebar.group :heading="__('Platform')">
                 <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:sidebar.item>
-
+                
                 <flux:sidebar.item icon="briefcase" :href="route('users.index')" :current="request()->routeIs('users.*')"
                     wire:navigate>
                     {{ __('Users') }}
                 </flux:sidebar.item>
-
-
 
                 <flux:sidebar.item icon="users" :href="route('clients.index')"
                     :current="request()->routeIs('clients.index')" wire:navigate>
                     {{ __('Clients') }}
                 </flux:sidebar.item>
 
-                <!-- <flux:sidebar.item
-                            icon="calendar"
-                            :href="route('bookings.index')"
-                            :current="request()->routeIs('bookings.index')"
-                            wire:navigate
-                        >
-                            {{ __('Bookings') }}
-                        </flux:sidebar.item> -->
+                <flux:sidebar.item icon="shield-check" :href="route('audit.index')"
+                    :current="request()->routeIs('audit.index')" wire:navigate>
+                    {{ __('Audit') }}
+                </flux:sidebar.item>
+
             </flux:sidebar.group>
         </flux:sidebar.nav>
 

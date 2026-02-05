@@ -4,6 +4,10 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use Zap\Models\Schedule;
 use TallStackUi\Traits\Interactions;
+use Zap\Enums\ScheduleTypes;
+use App\Models\Client;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\ScheduleTimeChangedNotification;
 
 new class extends Component {
     use Interactions;
@@ -15,6 +19,9 @@ new class extends Component {
     public $events = [];
     public $businessHours = [];
     public $pendingTimeProps;
+
+    public $scheduleChangeReason = '';
+    public $notifyUser = false;
 
     public function mount($availability, $blocked, $appointments)
     {
@@ -102,6 +109,11 @@ new class extends Component {
                 'start' => $start->toIso8601String(),
                 'end' => $end->toIso8601String(),
                 'color' => '#3b82f6', // Blue-500
+                'durationEditable' => true,
+                'startEditable' => true,
+                'resourceEditable' => true,
+                'overlap' => false,
+                'editable' => true,
             ];
         }
 
@@ -127,6 +139,12 @@ new class extends Component {
         $newEndDate = Carbon\Carbon::parse($this->pendingTimeProps['end'])->setTimezone(config('app.timezone'))->toDateString();
 
         $schedule = Schedule::find($id);
+
+        if ($this->notifyUser && $schedule->schedule_type === ScheduleTypes::APPOINTMENT) {
+            $client = Client::where('email', $schedule->metadata['client_email'])->first();
+            $client->notify(new ScheduleTimeChangedNotification($schedule, $this->pendingTimeProps['old_start'], $this->pendingTimeProps['start'], $this->scheduleChangeReason));
+        }
+
         $schedule->update([
             'start_date' => $newStartDate,
             'end_date' => $newEndDate,
@@ -183,10 +201,23 @@ new class extends Component {
                     Are you sure you want to change
                     <strong>{{ $pendingTimeProps['title'] }}</strong>
                     from
-                    <strong>{{ Carbon\Carbon::parse($pendingTimeProps['start'])->setTimezone(config('app.timezone'))->format('j M g:i A') }}</strong>
+                    <strong>{{ Carbon\Carbon::parse($pendingTimeProps['old_start'])->setTimezone(config('app.timezone'))->format('j M g:i A') }}</strong>
                     to
                     <strong>{{ Carbon\Carbon::parse($pendingTimeProps['end'])->setTimezone(config('app.timezone'))->format('j M g:i A') }}</strong>?
                 </p>
+            @endif
+
+            <flux:field>
+                <flux:label for="reason">Reason for Change (optional)</flux:label>
+                <flux:input type="text" id="reason" wire:model="scheduleChangeReason"
+                    placeholder="Enter reason for time change" />
+            </flux:field>
+
+            @if ($pendingTimeProps && strpos($pendingTimeProps['title'], 'Appointment') !== false)
+                <flux:field>
+                    <flux:label>Notify User about this Change</flux:label>
+                    <flux:checkbox wire:model="notifyUser" />
+                </flux:field>
             @endif
 
             <div class="flex justify-end gap-2 mt-4">
@@ -410,18 +441,28 @@ new class extends Component {
                     console.log('Event clicked:', info.event);
                 },
                 eventDrop: function(info) {
-                    console.log(info.event.title + " was dropped from " + info.oldEvent.start.toISOString() +
-                        " to " + info.event.start.toISOString());
-                },
-                eventResize: function(info) {
-                    console.log(info.event.title + " was resized from " + info.oldEvent.end.toISOString() +
-                        " to " + info.event.end.toISOString());
+                    console.log('Event dropped:', info.event);
 
                     Livewire.dispatch('request-time-change', {
                         props: {
                             id: info.event.id,
                             title: info.event.title,
-                            start: info.oldEvent.start.toISOString(),
+                            old_start: info.oldEvent.start.toISOString(),
+                            old_end: info.oldEvent.end.toISOString(),
+                            start: info.event.start.toISOString(),
+                            end: info.event.end.toISOString()
+                        }
+                    });
+                },
+                eventResize: function(info) {
+
+                    Livewire.dispatch('request-time-change', {
+                        props: {
+                            id: info.event.id,
+                            title: info.event.title,
+                            old_start: info.oldEvent.start.toISOString(),
+                            old_end: info.oldEvent.end.toISOString(),
+                            start: info.event.start.toISOString(),
                             end: info.event.end.toISOString()
                         }
                     });

@@ -17,7 +17,6 @@ Route::resource('clients', ClientController::class)->names('clients');
 Route::resource('bookings', BookingController::class)->names('bookings');
 // Route::resource('users', UserController::class)->names('users');
 
-
 Route::prefix('users')
     ->middleware(['auth', 'verified'])
     ->name('users.')
@@ -25,6 +24,13 @@ Route::prefix('users')
         Route::livewire('/', 'pages::user.⚡index')->name('index');
         Route::livewire('/add', 'pages::user.⚡create')->name('create');
         Route::livewire('/{user}', 'pages::user.⚡show')->name('show');
+    });
+
+Route::prefix('audit')
+    ->middleware(['auth', 'verified'])
+    ->name('audit.')
+    ->group(function () {
+        Route::livewire('/', 'pages::audit.⚡index')->name('index');
     });
 
 require __DIR__.'/settings.php';

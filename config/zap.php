@@ -99,7 +99,7 @@ return [
     |
     */
     'models' => [
-        'schedule' => \Zap\Models\Schedule::class,
-        'schedule_period' => \Zap\Models\SchedulePeriod::class,
+        'schedule' => \App\Models\Schedule::class,
+        'schedule_period' => \App\Models\SchedulePeriod::class,
     ],
 ];
